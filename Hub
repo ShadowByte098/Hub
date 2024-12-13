@@ -1,164 +1,127 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Window = Rayfield:CreateWindow({
+local Window = OrionLib:MakeWindow({
     Name = "RuniX Hub",
-    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-    LoadingTitle = "RuniX Hub",
-    LoadingSubtitle = "by Grandma96523",
-    Theme = "DarkBlue", -- Check https://docs.sirius.menu/rayfield/configuration/themes
- 
-    DisableRayfieldPrompts = false,
-    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
- 
-    ConfigurationSaving = {
-       Enabled = true,
-       FolderName = nil, -- Create a custom folder for your hub/game
-       FileName = "RuniX Hub"
-    },
- 
-    Discord = {
-       Enabled = true, -- Prompt the user to join your Discord server if their executor supports it
-       Invite = "https://discord.gg/getrunix", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
-       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-    },
- 
-    KeySystem = false, -- Set this to true to use our key system
-    KeySettings = {
-       Title = "Untitled",
-       Subtitle = "Key System",
-       Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-       Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-    }
- })
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "RuniXHub",
+    IntroEnabled = true,
+    IntroText = "Welcome to RuniX Hub!",
+})
 
- local Tab = Window:CreateTab("Player", "person-standing") -- Title, Image
+local PlayerTab = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
- local Section = Tab:CreateSection("Player")
+local PlayerSection = PlayerTab:AddSection({
+    Name = "Player"
+})
 
- Rayfield:Notify({
-    Title = "Welcome to RuniX Hub!",
+OrionLib:MakeNotification({
+    Name = "RuniX Hub Loaded!",
     Content = "Thanks for using!",
-    Duration = 6.5,
-    Image = "laugh",
- })
+    Image = "rbxassetid://4483345998", -- Replace with a relevant image ID if needed
+    Time = 5 -- Notification duration in seconds
+})
 
--- Sliders for WalkSpeed, JumpPower, Gravity, FOV
-local WalkSpeedSlider = Tab:CreateSlider({
+-- Declare variables to store slider objects
+local WalkSpeedSlider, JumpPowerSlider, GravitySlider, FOVSlider
+
+-- Add sliders and store them in variables
+WalkSpeedSlider = PlayerTab:AddSlider({
     Name = "Walk Speed",
-    Range = {10, 500},
+    Min = 10,
+    Max = 500,
+    Default = 16,
+    Color = Color3.fromRGB(255,255,255),
     Increment = 1,
-    Suffix = "Speed",
-    CurrentValue = 16, -- Default WalkSpeed value (adjust if needed)
-    Flag = "Speed", -- A flag is the identifier for the configuration file
+    ValueName = "Speed",
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-    end,
+    end    
 })
 
-local JumpPowerSlider = Tab:CreateSlider({
+JumpPowerSlider = PlayerTab:AddSlider({
     Name = "Jump Power",
-    Range = {10, 500},
+    Min = 10,
+    Max = 500,
+    Default = 50,
+    Color = Color3.fromRGB(255,255,255),
     Increment = 1,
-    Suffix = "Jump",
-    CurrentValue = 50, -- Default JumpPower value (adjust if needed)
-    Flag = "JumpPower", -- Unique flag for JumpPower
+    ValueName = "Jump",
     Callback = function(Value)
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-    end,
+    end    
 })
 
-local GravitySlider = Tab:CreateSlider({
+GravitySlider = PlayerTab:AddSlider({
     Name = "Gravity",
-    Range = {0, 400},
+    Min = 0,
+    Max = 500,
+    Default = 196,
+    Color = Color3.fromRGB(255,255,255),
     Increment = 10,
-    Suffix = "Gravity",
-    CurrentValue = 196, -- Default Roblox gravity
-    Flag = "Gravity", -- Unique flag for gravity
+    ValueName = "Gravity",
     Callback = function(Value)
         workspace.Gravity = Value
-    end,
+    end    
 })
 
-local FOVSlider = Tab:CreateSlider({
+FOVSlider = PlayerTab:AddSlider({
     Name = "Field of View",
-    Range = {0, 120},
+    Min = 0,
+    Max = 120,
+    Default = 70,
+    Color = Color3.fromRGB(255,255,255),
     Increment = 1,
-    Suffix = "FOV",
-    CurrentValue = 70, -- Default FOV value
-    Flag = "FOV", -- Unique flag for FOV
+    ValueName = "FOV",
     Callback = function(Value)
         game:GetService("Workspace").CurrentCamera.FieldOfView = Value
-    end,
+    end    
 })
 
--- Reset Button to restore all values to default
-local ResetButton = Tab:CreateButton({
+-- Add reset button
+PlayerTab:AddButton({
     Name = "Reset All Values",
-    Flag = "ResetButton", -- Unique flag for the reset button
     Callback = function()
-        -- Reset all values to their default
-        WalkSpeedSlider:Set(16) -- Default WalkSpeed
-        JumpPowerSlider:Set(50) -- Default JumpPower
-        GravitySlider:Set(196) -- Default Gravity
-        FOVSlider:Set(70) -- Default FOV
-    end,
+        -- Reset sliders to default values
+        WalkSpeedSlider:Set(16)
+        JumpPowerSlider:Set(50)
+        GravitySlider:Set(196)
+        FOVSlider:Set(70)
+    end    
 })
 
+-- Scripts Tab
+local ScriptsTab = Window:MakeTab({
+    Name = "Scripts",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
-local Tab = Window:CreateTab("Scripts", "scroll") -- Title, Image
+local ScriptsSection = ScriptsTab:AddSection({
+    Name = "Scripts"
+})
 
-local Section = Tab:CreateSection("Scripts")
+-- Function to create script buttons
+local function addScriptButton(name, url)
+    ScriptsTab:AddButton({
+        Name = name,
+        Callback = function()
+            loadstring(game:HttpGet(url))()
+        end    
+    })
+end
 
-local Button = Tab:CreateButton({
-    Name = "Load Infinite Yield",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end,
- })
+-- Add script buttons
+addScriptButton("Load Infinite Yield", "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source")
+addScriptButton("Simple Aimbot + ESP", "https://raw.githubusercontent.com/Stsbba/UNC-B/refs/heads/main/Diddy")
+addScriptButton("NeverPatched | ChatBypass", "https://rawscripts.net/raw/Universal-Script-NeverPatched-Bypass-official-21146")
+addScriptButton("FISCH", "https://you.whimper.xyz/sources/CupPink/fisch.lua")
+addScriptButton("Prison Life FE", "https://raw.githubusercontent.com/g0fuzzyprisonfe/main/main.lua")
+addScriptButton("AirHub | Aimbot", "https://raw.githubusercontent.com/ShadowByte098/Hub/refs/heads/main/air")
+addScriptButton("Be Npc Or Die", "https://raw.githubusercontent.com/ShadowByte098/Hub/refs/heads/main/npc")
 
- local Button = Tab:CreateButton({
-    Name = "Simple Aimbot + ESP",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Stsbba/UNC-B/refs/heads/main/Diddy"))()
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "NeverPatched | ChatBypass",
-    Callback = function()
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-NeverPatched-Bypass-official-21146"))()
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "FISCH",
-    Callback = function()
-        loadstring(game:HttpGet("https://you.whimper.xyz/sources/CupPink/fisch.lua"))()
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "Prison Life FE",
-    Callback = function()
-        loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\103\48\48\108\88\112\108\111\105\116\101\114\47\103\48\48\108\88\112\108\111\105\116\101\114\47\109\97\105\110\47\70\101\37\50\48\98\121\112\97\115\115\34\44\32\116\114\117\101\41\41\40\41\10")()
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "AirHub | Aimbot",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowByte098/Hub/refs/heads/main/air"))()
-    end,
- })
-
- local Button = Tab:CreateButton({
-    Name = "Be Npc Or Die",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ShadowByte098/Hub/refs/heads/main/npc"))()
-    end,
- })
-
- Rayfield:LoadConfiguration()
+OrionLib:Init()
